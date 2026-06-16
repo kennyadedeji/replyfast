@@ -1,0 +1,16 @@
+{
+  "name": "replyfast",
+  "version": "1.0.0",
+  "description": "AI review reply generator for small businesses",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ReplyFast — Reply to any Google review in 5 seconds</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@600;700&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green: #16a34a;
+    --green-light: #dcfce7;
+    --green-dark: #14532d;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-400: #9ca3af;
+    --gray-600: #4b5563;
+    --gray-800: #1f2937;
+    --gray-900: #111827;
+    --white: #ffffff;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #f0fdf4;
+    color: var(--gray-900);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  nav {
+    background: var(--white);
+    border-bottom: 1px solid var(--gray-200);
+    padding: 0 24px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .nav-logo { font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 700; color: var(--green); letter-spacing: -0.5px; }
+  .nav-logo span { color: var(--gray-900); }
+  .nav-badge { font-size: 11px; background: var(--green-light); color: var(--green-dark); padding: 3px 10px; border-radius: 20px; font-weight: 500; }
+
+  .hero { text-align: center; padding: 56px 24px 40px; max-width: 640px; margin: 0 auto; }
+  .hero-pill { display: inline-block; font-size: 12px; font-weight: 500; background: var(--green-light); color: var(--green-dark); padding: 4px 14px; border-radius: 20px; margin-bottom: 18px; }
+  .hero h1 { font-family: 'Sora', sans-serif; font-size: clamp(26px, 5vw, 38px); font-weight: 700; line-height: 1.15; letter-spacing: -0.5px; margin-bottom: 14px; }
+  .hero h1 em { font-style: normal; color: var(--green); }
+  .hero p { font-size: 16px; color: var(--gray-600); max-width: 480px; margin: 0 auto; }
+  .hero-stats { display: flex; justify-content: center; gap: 28px; margin-top: 24px; flex-wrap: wrap; }
+  .stat-num { font-family: 'Sora', sans-serif; font-size: 22px; font-weight: 700; color: var(--green); }
+  .stat-label { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+
+  .tool-wrap { max-width: 680px; margin: 0 auto 48px; padding: 0 16px; }
+  .tool-card { background: var(--white); border-radius: 20px; border: 1px solid var(--gray-200); overflow: hidden; }
+  .tool-header { background: var(--gray-900); padding: 16px 24px; display: flex; align-items: center; gap: 8px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .tool-header p { font-size: 13px; color: var(--gray-400); margin-left: 6px; }
+  .tool-body { padding: 28px 28px 24px; }
+
+  .field { margin-bottom: 20px; }
+  .field label { display: block; font-size: 12px; font-weight: 600; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 7px; }
+  .field select, .field input[type=text], .field textarea { width: 100%; font-family: 'Inter', sans-serif; font-size: 14px; color: var(--gray-900); background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius-sm); padding: 10px 14px; outline: none; transition: border-color 0.15s; appearance: none; }
+  .field select:focus, .field input:focus, .field textarea:focus { border-color: var(--green); background: var(--white); }
+  .field textarea { min-height: 100px; resize: vertical; line-height: 1.6; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+  .stars-wrap { display: flex; gap: 6px; align-items: center; }
+  .star { font-size: 26px; cursor: pointer; color: var(--gray-200); transition: color 0.1s, transform 0.1s; user-select: none; line-height: 1; }
+  .star.lit { color: #f59e0b; }
+  .star:hover { transform: scale(1.15); }
+  .star-label { font-size: 12px; color: var(--gray-400); margin-left: 8px; }
+
+  .tone-wrap { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tone-pill { font-size: 13px; padding: 6px 16px; border-radius: 20px; border: 1px solid var(--gray-200); background: var(--white); color: var(--gray-600); cursor: pointer; transition: all 0.12s; font-family: 'Inter', sans-serif; }
+  .tone-pill:hover { border-color: var(--green); color: var(--green); }
+  .tone-pill.active { background: var(--green); border-color: var(--green); color: var(--white); font-weight: 500; }
+
+  .gen-btn { width: 100%; padding: 14px; background: var(--green); color: var(--white); font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 600; border: none; border-radius: var(--radius-sm); cursor: pointer; transition: background 0.15s, transform 0.1s; margin-top: 6px; letter-spacing: -0.2px; }
+  .gen-btn:hover { background: #15803d; }
+  .gen-btn:active { transform: scale(0.99); }
+  .gen-btn:disabled { background: var(--gray-400); cursor: not-allowed; }
+
+  .divider { border: none; border-top: 1px solid var(--gray-100); margin: 24px 0; display: none; }
+  .output-section { display: none; }
+  .output-label-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .output-label { font-size: 12px; font-weight: 600; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.06em; }
+  .sentiment-badge { font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 20px; }
+  .output-box { background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius-sm); padding: 16px 18px; font-size: 14px; line-height: 1.75; color: var(--gray-800); white-space: pre-wrap; min-height: 80px; }
+  .output-actions { display: flex; gap: 8px; margin-top: 12px; justify-content: flex-end; }
+  .action-btn { font-size: 12px; font-weight: 500; padding: 7px 16px; border-radius: var(--radius-sm); border: 1px solid var(--gray-200); background: var(--white); color: var(--gray-600); cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.12s; }
+  .action-btn:hover { border-color: var(--green); color: var(--green); }
+  .action-btn.primary { background: var(--green-light); border-color: var(--green-light); color: var(--green-dark); }
+  .next-box { margin-top: 16px; padding: 14px 16px; border-radius: var(--radius-sm); border-left: 3px solid var(--green); background: var(--green-light); }
+  .next-box p { font-size: 13px; color: var(--green-dark); line-height: 1.6; }
+
+  .how-section { max-width: 680px; margin: 0 auto 56px; padding: 0 16px; }
+  .how-section h2 { font-family: 'Sora', sans-serif; font-size: 20px; font-weight: 700; text-align: center; margin-bottom: 24px; }
+  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; }
+  .step-card { background: var(--white); border: 1px solid var(--gray-200); border-radius: var(--radius); padding: 20px 18px; text-align: center; }
+  .step-num { width: 32px; height: 32px; background: var(--green); color: var(--white); border-radius: 50%; font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; }
+  .step-card h3 { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+  .step-card p { font-size: 12px; color: var(--gray-600); line-height: 1.5; }
+
+  footer { text-align: center; padding: 24px; font-size: 12px; color: var(--gray-400); border-top: 1px solid var(--gray-200); background: var(--white); }
+
+  .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 8px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--gray-900); color: var(--white); padding: 10px 20px; border-radius: 20px; font-size: 13px; font-weight: 500; transition: transform 0.3s ease; z-index: 100; pointer-events: none; }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 500px) {
+    .field-row { grid-template-columns: 1fr; }
+    .tool-body { padding: 20px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Reply<span>Fast</span></div>
+  <span class="nav-badge">Free to use</span>
+</nav>
+
+<div class="hero">
+  <div class="hero-pill">Built for UK &amp; US small businesses</div>
+  <h1>Reply to any Google review<br>in <em>5 seconds</em></h1>
+  <p>Paste a customer review. Get a professional reply instantly. No login. No fuss. Completely free.</p>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-num">5 sec</div><div class="stat-label">average reply time</div></div>
+    <div class="stat"><div class="stat-num">4 tones</div><div class="stat-label">to match your style</div></div>
+    <div class="stat"><div class="stat-num">8 types</div><div class="stat-label">of business supported</div></div>
+  </div>
+</div>
+
+<div class="tool-wrap">
+  <div class="tool-card">
+    <div class="tool-header">
+      <div class="dot" style="background:#ef4444;"></div>
+      <div class="dot" style="background:#f59e0b;"></div>
+      <div class="dot" style="background:#22c55e;"></div>
+      <p>replyfast — review reply generator</p>
+    </div>
+    <div class="tool-body">
+
+      <div class="field-row">
+        <div class="field">
+          <label>Your business type</label>
+          <select id="bizType">
+            <option value="restaurant">Restaurant / cafe</option>
+            <option value="salon">Hair / beauty salon</option>
+            <option value="plumber">Plumber / tradesperson</option>
+            <option value="dentist">Dentist / clinic</option>
+            <option value="gym">Gym / fitness studio</option>
+            <option value="hotel">Hotel / B&amp;B</option>
+            <option value="shop">Retail shop</option>
+            <option value="takeaway">Takeaway</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Business name (optional)</label>
+          <input type="text" id="bizName" placeholder="e.g. The Crown Pub">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Star rating of this review</label>
+        <div class="stars-wrap">
+          <span class="star" data-v="1">★</span>
+          <span class="star" data-v="2">★</span>
+          <span class="star" data-v="3">★</span>
+          <span class="star lit" data-v="4">★</span>
+          <span class="star lit" data-v="5">★</span>
+          <span class="star-label" id="starLabel">4 stars — positive</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Paste the customer review</label>
+        <textarea id="reviewText" placeholder="e.g. Food was lovely but had to wait 40 minutes for our table even with a reservation. Staff were apologetic and friendly though. Would try again."></textarea>
+      </div>
+
+      <div class="field">
+        <label>Reply tone</label>
+        <div class="tone-wrap">
+          <button class="tone-pill active" data-tone="professional">Professional</button>
+          <button class="tone-pill" data-tone="warm">Warm &amp; friendly</button>
+          <button class="tone-pill" data-tone="apologetic">Apologetic</button>
+          <button class="tone-pill" data-tone="confident">Confident</button>
+        </div>
+      </div>
+
+      <button class="gen-btn" id="genBtn" onclick="generateReply()">Generate my reply</button>
+
+      <hr class="divider" id="divider">
+
+      <div class="output-section" id="outputSection">
+        <div class="output-label-row">
+          <span class="output-label">Your reply</span>
+          <span class="sentiment-badge" id="sentimentBadge"></span>
+        </div>
+        <div class="output-box" id="replyOutput"></div>
+        <div class="output-actions">
+          <button class="action-btn" onclick="generateReply()">Try again</button>
+          <button class="action-btn primary" onclick="copyReply()">Copy reply</button>
+        </div>
+        <div class="next-box" style="margin-top:16px;">
+          <p id="nextText"></p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="how-section">
+  <h2>How it works</h2>
+  <div class="steps">
+    <div class="step-card"><div class="step-num">1</div><h3>Pick your business</h3><p>Tell us what kind of business you run so the reply sounds right.</p></div>
+    <div class="step-card"><div class="step-num">2</div><h3>Paste the review</h3><p>Copy the review from Google and paste it in the box above.</p></div>
+    <div class="step-card"><div class="step-num">3</div><h3>Choose your tone</h3><p>Professional, warm, apologetic or confident — you decide.</p></div>
+    <div class="step-card"><div class="step-num">4</div><h3>Copy and paste</h3><p>Hit copy, go to Google, paste your reply. Done in under a minute.</p></div>
+  </div>
+</div>
+
+<footer>ReplyFast — Free review reply tool for small businesses &nbsp;·&nbsp; Built for busy business owners</footer>
+<div class="toast" id="toast">Copied to clipboard!</div>
+
+<script>
+  let rating = 4;
+  let tone = 'professional';
+  const starLabels = ['','1 star — very unhappy','2 stars — unhappy','3 stars — mixed','4 stars — positive','5 stars — very happy'];
+
+  document.querySelectorAll('.star').forEach(s => {
+    s.addEventListener('click', () => {
+      rating = +s.dataset.v;
+      document.querySelectorAll('.star').forEach(st => st.classList.toggle('lit', +st.dataset.v <= rating));
+      document.getElementById('starLabel').textContent = starLabels[rating];
+    });
+  });
+
+  document.querySelectorAll('.tone-pill').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tone-pill').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      tone = btn.dataset.tone;
+    });
+  });
+
+  async function generateReply() {
+    const review = document.getElementById('reviewText').value.trim();
+    if (!review) { alert('Please paste a customer review first.'); return; }
+
+    const btn = document.getElementById('genBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Writing your reply...';
+    document.getElementById('divider').style.display = 'none';
+    document.getElementById('outputSection').style.display = 'none';
+
+    try {
+      const res = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          review,
+          bizType: document.getElementById('bizType').value,
+          bizName: document.getElementById('bizName').value.trim(),
+          rating,
+          tone
+        })
+      });
+
+      const data = await res.json();
+      if (!res.ok || data.error) throw new Error(data.error || 'Failed');
+
+      document.getElementById('replyOutput').textContent = data.reply;
+
+      const badge = document.getElementById('sentimentBadge');
+      if (rating >= 4) { badge.textContent = 'Positive review'; badge.style.cssText = 'background:#dcfce7;color:#14532d;'; }
+      else if (rating === 3) { badge.textContent = 'Mixed review'; badge.style.cssText = 'background:#fef3c7;color:#78350f;'; }
+      else { badge.textContent = 'Negative review'; badge.style.cssText = 'background:#fee2e2;color:#7f1d1d;'; }
+
+      const nextText = document.getElementById('nextText');
+      if (rating <= 2) nextText.innerHTML = '<strong>Negative review.</strong> Paste this on Google within 24 hours. Then try to contact the customer privately — a resolved complaint often becomes a 5-star update.';
+      else if (rating === 3) nextText.innerHTML = '<strong>Mixed review.</strong> Replying promptly shows you care. A 3-star customer who feels heard often becomes one of your most loyal regulars.';
+      else nextText.innerHTML = '<strong>Great review!</strong> After replying, screenshot it and share it on your Facebook or Instagram. Real reviews are more powerful than any advert.';
+
+      document.getElementById('divider').style.display = 'block';
+      document.getElementById('outputSection').style.display = 'block';
+
+    } catch (err) {
+      alert('Something went wrong. Please try again in a moment.');
+    }
+
+    btn.disabled = false;
+    btn.innerHTML = 'Generate my reply';
+  }
+
+  function copyReply() {
+    navigator.clipboard.writeText(document.getElementById('replyOutput').textContent).then(() => {
+      const t = document.getElementById('toast');
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2200);
+    });
+  }
+</script>
+</body>
+</html>
